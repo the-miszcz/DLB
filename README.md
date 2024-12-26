@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner3.jpg" alt="DLB Banner">
+</p>
+
 # DLB
 This is a simple Discord leaderboard bot leveraging AWS free-tier services.
 
