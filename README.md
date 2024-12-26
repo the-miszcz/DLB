@@ -44,7 +44,7 @@ This is a simple Discord leaderboard bot leveraging AWS free-tier services.
 > **NOTE:**<br>
 > To register commands we use [axios](https://axios-http.com/docs/intro) to query and post to Discord API.<br>
 > Secrets are stored in .env which uses [dotenv](https://www.npmjs.com/package/dotenv).<br>
-> Leaderboard is stored using [DynamoDB].<br>
+> Leaderboard is stored using [DynamoDB](https://aws.amazon.com/dynamodb/).<br>
 - On local machine, create a new directory separate from lambda_files
   - run `npm i axios dotenv @aws-sdk/client-dynamodb`
 - update the **.env** file with your BOT TOKEN, APP ID, and GUILD ID
