@@ -1,0 +1,2 @@
+# DLB
+Discord Leaderboard Bot
