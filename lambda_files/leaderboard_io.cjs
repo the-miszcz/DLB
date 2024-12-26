@@ -1,5 +1,4 @@
-const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, PutItemCommand, GetItemCommand, WaiterState } = require('@aws-sdk/client-dynamodb');
-
+const { DeleteItemCommand, DescribeTableCommand, DynamoDBClient, PutItemCommand, GetItemCommand } = require('@aws-sdk/client-dynamodb');
 const dynamoDBClient = new DynamoDBClient({ region: 'us-west-2' });
 const TABLE_NAME = 'LeaderboardTable';
 
@@ -60,40 +59,72 @@ async function saveLeaderboard(leaderboardName, leaderboardData) {
     await dynamoDBClient.send(new PutItemCommand(params));
 }
 
-// Command handler for creating a new leaderboard
-module.exports = async function (body) {
-    await createTableIfNotExists();
+// Function to delete a leaderboard from DynamoDB
+async function deleteLeaderboard(leaderboardName) {
+    const deleteParams = {
+        TableName: TABLE_NAME,
+        Key: {
+            LeaderboardName: { S: leaderboardName },
+        },
+    };
 
-    const leaderboardOption = body.data.options.find((option) => option.name === 'leaderboard');
-    const descriptionOption = body.data.options.find((option) => option.name === 'description');
-    const leaderboardName = leaderboardOption.value.trim();
-    const descriptionName = descriptionOption.value.trim();
+    await dynamoDBClient.send(new DeleteItemCommand(deleteParams));
+}
 
-    // Load the leaderboard data from DynamoDB
+// Function to display a leaderboard
+async function displayLeaderboard(leaderboardName, extraInfo = "") {
     const leaderboard = await loadLeaderboard(leaderboardName);
 
-    // Check if the leaderboard already exists
-    if (Object.keys(leaderboard).length > 0) {
+    // Check if the leaderboard exists
+    if (Object.keys(leaderboard).length === 0) {
         return {
             statusCode: 200,
             body: JSON.stringify({
                 type: 4,
-                data: { content: `Leaderboard \`${leaderboardName}\` already exists.` },
+                data: { content: `Leaderboard \`${leaderboardName}\` does not exist or has no data.` },
             }),
         };
     }
 
-    // Create a new leaderboard
-    const newLeaderboard = { description: descriptionName, times: {} };
+    // Function to convert time string to total milliseconds
+    function timeToMilliseconds(timeStr) {
+        const [minutes, secondsMilliseconds] = timeStr.split(":");
+        const [seconds, milliseconds] = secondsMilliseconds.split(".");
+        return parseInt(minutes) * 60 * 1000 + parseInt(seconds) * 1000 + parseInt(milliseconds);
+    }
 
-    // Save the new leaderboard data to DynamoDB
-    await saveLeaderboard(leaderboardName, newLeaderboard);
+    // Sort the dictionary by the converted time values
+    const sortedTimesArray = Object.entries(leaderboard['times']).sort(([, timeA], [, timeB]) => {
+        return timeToMilliseconds(timeA) - timeToMilliseconds(timeB);
+    });
 
+    // Helper function to format the leaderboard data into a Discord message
+    function formatDiscordEmbed(leaderboardName, description, sortedTimesArray) {
+        const fields = sortedTimesArray.map(([userID, time], index) => ({
+            name: `#${index + 1}: <@${userID}>`,
+            value: `Time: ${time}`,
+            inline: false,
+        }));
+
+        return {
+            title: `Leaderboard: ${leaderboardName}`,
+            description: description || "",
+            fields: fields,
+            color: 3066993, // A nice green color
+        };
+    }
+
+    const embedMessage = formatDiscordEmbed(leaderboardName, leaderboard["description"], sortedTimesArray);
     return {
         statusCode: 200,
         body: JSON.stringify({
             type: 4,
-            data: { content: `Leaderboard \`${leaderboardName}\` has been created.` },
+            data: {
+                content: extraInfo,
+                embeds: [embedMessage],
+            },
         }),
     };
-};
+}
+
+module.exports = { createTableIfNotExists, loadLeaderboard, saveLeaderboard, deleteLeaderboard, displayLeaderboard };
