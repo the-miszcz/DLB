@@ -1,10 +1,10 @@
 const nacl = require('tweetnacl');
 
-const leaderboardCommandHandler = require('./_display_leaderboard'); // Import the leaderboardCommandHandler module
-const createLeaderboardCommandHandler = require('./_create_leaderboard'); // Import the createLeaderboardCommandHandler module
-const deleteLeaderboardCommandHandler = require('./_delete_leaderboard'); // Import the deleteLeaderboardCommandHandler module
-const addEntryCommandHandler = require('./_add_entry'); // Import the addEntryCommandHandler module
-const removeEntryCommandHandler = require('./_remove_entry'); // Import the removeEntryCommandHandler module
+const leaderboardCommandHandler = require('./_display_leaderboard.cjs');
+const createLeaderboardCommandHandler = require('./_create_leaderboard.cjs');
+const deleteLeaderboardCommandHandler = require('./_delete_leaderboard.cjs');
+const addEntryCommandHandler = require('./_add_entry.cjs');
+const removeEntryCommandHandler = require('./_remove_entry.cjs');
 
 exports.handler = async (event, context, callback) => {
 // Checking signature (requirement 1.)
@@ -36,7 +36,7 @@ exports.handler = async (event, context, callback) => {
     }
   }
 
-// Handle /leaderboard Command
+// Handle /display_leaderboard Command
 if (body.data.name == 'display_leaderboard') {
   return leaderboardCommandHandler(body);
 }

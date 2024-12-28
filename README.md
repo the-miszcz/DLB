@@ -24,7 +24,7 @@ This is a simple Discord leaderboard bot leveraging AWS free-tier services.
 > **NOTE:**<br>
 > Discord security verification requires [tweetnacl](https://discord.com/developers/docs/interactions/receiving-and-responding#security-and-authorization).
 - On local machine, create a new directory i.e. lambda_files to store **node_modules** as well as **.js** files for Lambda
-  - run `npm i tweetnacl`
+  - run `npm i tweetnacl @aws-sdk/client-dynamodb`
 - Setup your **index.js** and any other files
 - Zip within the folder, including node_modules, and upload to Lambda function
 
