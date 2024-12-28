@@ -1,4 +1,5 @@
-const { loadLeaderboard, saveLeaderboard, displayLeaderboard } = require('./leaderboard_io.cjs');
+const { loadLeaderboard, saveLeaderboard } = require('./leaderboard_io.cjs');
+const { displayLeaderboard } = require('./display.cjs');
 
 // Command handler for adding an entry to a leaderboard
 module.exports = async function (body) {

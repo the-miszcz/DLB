@@ -1,4 +1,5 @@
-const { loadLeaderboard, saveLeaderboard, displayLeaderboard } = require('./leaderboard_io.cjs');
+const { loadLeaderboard, saveLeaderboard } = require('./leaderboard_io.cjs');
+const { displayLeaderboard } = require('./display.cjs');
 
 // Command handler for removing an entry from a leaderboard
 module.exports = async function (body) {
@@ -28,7 +29,7 @@ module.exports = async function (body) {
             statusCode: 200,
             body: JSON.stringify({
                 type: 4,
-                data: { content: `User \`${userId}\` not found in leaderboard \`${leaderboardName}\`.` },
+                data: { content: `User <@${userId}> not found in leaderboard \`${leaderboardName}\`.` },
             }),
         };
     }
@@ -39,7 +40,7 @@ module.exports = async function (body) {
     // Save the updated leaderboard data to DynamoDB
     await saveLeaderboard(leaderboardName, leaderboard);
 
-    const displayMessage = `User \`${userId}\` has been removed from leaderboard \`${leaderboardName}\`.`;
+    const displayMessage = `User <@${userId}> has been removed from leaderboard \`${leaderboardName}\`.`;
 
     return await displayLeaderboard(leaderboardName, displayMessage);
 }

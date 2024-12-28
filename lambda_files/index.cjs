@@ -1,10 +1,12 @@
 const nacl = require('tweetnacl');
 
-const leaderboardCommandHandler = require('./_display_leaderboard.cjs');
-const createLeaderboardCommandHandler = require('./_create_leaderboard.cjs');
-const deleteLeaderboardCommandHandler = require('./_delete_leaderboard.cjs');
-const addEntryCommandHandler = require('./_add_entry.cjs');
-const removeEntryCommandHandler = require('./_remove_entry.cjs');
+const commandHandlers = {
+  display_leaderboard: require('./_display_leaderboard.cjs'),
+  create_leaderboard: require('./_create_leaderboard.cjs'),
+  delete_leaderboard: require('./_delete_leaderboard.cjs'),
+  add_entry: require('./_add_entry.cjs'),
+  remove_entry: require('./_remove_entry.cjs'),
+};
 
 exports.handler = async (event, context, callback) => {
 // Checking signature (requirement 1.)
@@ -36,32 +38,11 @@ exports.handler = async (event, context, callback) => {
     }
   }
 
-// Handle /display_leaderboard Command
-if (body.data.name == 'display_leaderboard') {
-  return leaderboardCommandHandler(body);
-}
+  const handler = commandHandlers[body.data.name];
+  if (handler) {
+      return handler(body);
+  }
 
-// Handle /create_leaderboard Command
-if (body.data.name == 'create_leaderboard') {
-  return createLeaderboardCommandHandler(body);
-}
-
-// Handle /delete_leaderboard Command
-if (body.data.name == 'delete_leaderboard') {
-  return deleteLeaderboardCommandHandler(body);
-}
-
-// Handle /add_entry Command
-if (body.data.name == 'add_entry') {
-  return addEntryCommandHandler(body);
-}
-
-// Handle /remove_entry Command
-if (body.data.name == 'remove_entry') {
-  return removeEntryCommandHandler(body);
-}
-
-// END OF FILE
   return {
     statusCode: 404, // If no handler implemented for Discord's request
     body: JSON.stringify('Not Found'),
