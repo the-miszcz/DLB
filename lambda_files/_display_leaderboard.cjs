@@ -1,4 +1,4 @@
-const { displayLeaderboard } = require('./leaderboard_io.cjs');
+const { displayLeaderboard } = require('./display.cjs');
 
 // Command handler for displaying a leaderboard
 module.exports = async function (body) {
