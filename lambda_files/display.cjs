@@ -29,17 +29,23 @@ async function displayLeaderboard(leaderboardName, extraInfo = "") {
 
     // Helper function to format the leaderboard data into a Discord message
     function formatDiscordEmbed(leaderboardName, description, sortedTimesArray) {
-        const fields = sortedTimesArray.map(([userID, time], index) => ({
-                name: `#${index + 1}`,
-                value: `<@${userID}>: ${time}`,
+        // Handy tool to get a nice embed: https://glitchii.github.io/embedbuilder/
+        const standings = sortedTimesArray.map(([userID, time], index) => `#${index + 1}: <@${userID}> - ${time}`).join('\n');
+
+        const fields = [
+            {
+                name: `Standings`,
+                value: standings || "No entries available.",
                 inline: false,
-        }));
+            }
+        ];
 
         return {
-            title: `Leaderboard: ${leaderboardName}`,
+            title: leaderboardName,
             description: description || "",
             fields: fields,
-            color: 3066993, // A nice green color
+            color: 16457014, // A nice red color matching bot's avatar
+            thumbnail: {url: "https://cdn3.iconfinder.com/data/icons/sports-recreation-1/128/checkered-flag-512.png"},
         };
     }
 
