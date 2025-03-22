@@ -25,6 +25,17 @@ module.exports = async function (body) {
         };
     }
 
+    const regex = /^\d{1,2}:\d{2}\.\d{3}$/;
+    if (!regex.test(timeValue)) {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                type: 4,
+                data: { content: `Time should have the following format: "Min:Sec.Milisec" but the following value was passed: \`${timeValue}\`.` },
+            }),
+        };
+    }
+
     // Add the new time entry to the leaderboard
     leaderboard['times'][targetUserId] = timeValue;
 
